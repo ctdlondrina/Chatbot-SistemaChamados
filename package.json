@@ -1,0 +1,43 @@
+{
+  "name": "chatbot-sistemachamados",
+  "version": "1.0.0",
+  "description": "Chatbot para abertura de chamados e atendimento da TI em geral",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/edupoli/Chatbot-SistemaChamados.git"
+  },
+  "keywords": [
+    "chatbot",
+    "venom-bot",
+    "chamados",
+    "tickets",
+    "bot",
+    "em",
+    "estagios"
+  ],
+  "author": "Eduardo Policarpo",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/edupoli/Chatbot-SistemaChamados/issues"
+  },
+  "homepage": "https://github.com/edupoli/Chatbot-SistemaChamados#readme",
+  "dependencies": {
+    "@google-cloud/dialogflow": "^3.3.0",
+    "axios": "^0.21.1",
+    "fs": "0.0.1-security",
+    "mime": "^2.4.7",
+    "mysql": "^2.18.1",
+    "oracledb": "^5.1.0",
+    "path": "^0.12.7",
+    "request": "^2.88.2",
+    "types": "^0.1.1",
+    "typescript": "^4.1.3",
+    "util": "^0.12.3",
+    "uuid": "^8.3.2",
+    "venom-bot": "^2.2.3"
+  }
+}
