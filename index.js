@@ -24,7 +24,7 @@ const clientPromisse = Whatsapp.create(
         logQR: true,
         browserArgs: ['--no-sandbox', '--disable-extensions', '--no-default-browser-check', '--ignore-certificate-errors', '--disable-default-apps',],
         disableWelcome: true,
-        updatesLog: false,
+        updatesLog: true,
         autoClose: 60000,
         createPathFileToken: true,
     }

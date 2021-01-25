@@ -10,7 +10,7 @@ async function execute(message) {
       console.dir("Dados:  " + dados[message.from].itens);
       client.sendText(message.from,
         "*⚒️ ABERTURA DE CHAMADO* \n\n" +
-        "Por favor informe seu RE\n" +
+        "Por favor informe seu *RE*\n" +
         "Voltar ao *Menu Principal* digite #️⃣"
       ).then((result) => { }).catch((error) => { console.log(error) });
       return
@@ -42,7 +42,10 @@ async function execute(message) {
 
     if (message.body === "4") {
       dados[message.from].stage = 15;
-      client.sendText(message.from, '👋🏻 Oi eu sou a *Lunna*👩🏻‍🦰\n' +
+      dados[message.from].itens.push(message.body);
+      console.log("Estagio " + dados[message.from].stage);
+      console.dir("Dados:  " + dados[message.from].itens);
+      client.sendText(message.from, '👋🏻 Oi eu sou a *Lunna* 👩🏻‍🦰\n' +
         'Assistente virtual da CTD em que posso ajudar ?\n\n' +
         'Para voltar ao menu inicial digite #️⃣'
       ).then((result) => { }).catch((error) => { console.log(error) });
@@ -55,31 +58,20 @@ async function execute(message) {
       console.dir("Dados:  " + dados[message.from].itens);
       client.sendText(message.from,
         "*✍🏼 Críticas Sugestões ou Elogios* \n\n" +
-        "💬 Sua opinião é muito importante para nós, pois através dela" +
-        "poderemos estar melhorando nosso atendimento." +
-        "Portanto *Críticas Construtivas* e *Sugestões de Melhorias ou novas Ideias 💭" +
-        "serão muito bem vindas. 😉\n" +
+        "💬 Sua opinião é muito importante. \n" +
+        "Através dela poderemos melhorar nosso atendimento." +
+        "Portanto, *Críticas Construtivas* ou *Sugestões de Melhorias ou novas Ideias* 💡" +
+        "são muito bem vindas. 😉\n\n" +
 
-        "Descreva sua opinião\n\n" +
+        "Descreva sua Sugestão\n\n" +
         "Voltar ao *Menu Principal* digite #️⃣"
       ).then((result) => { }).catch((error) => { console.log(error) });
       return
     }
 
-    if (message.from === "#" || message.from.toLowerCase() === "voltar") {
+    if (message.body === "#" || message.body.toLowerCase() === "voltar") {
       client.sendText(message.from,
-        'Seja bem vindo ao sistema de 🛠️ Suporte de Informática da CTD 🖥️ \n' +
-        `Por favor *escolha uma opção:*\n\n` +
-        `*MENU PRINCIPAL*\n` +
-        `⚒️ *1* - Abertura de Chamado. \n` +
-        `🔍 *2* - Consultar Chamado. \n` +
-        `☎️ *3* - Consultar Ramais. \n` +
-        `👩🏻‍💼 *4* - Falar com a *Lunna*. \n` +
-        `✍🏼 *5* - Críticas Sugestões ou Elogios. \n\n\n` +
-
-        `A qualquer momento durante a navegação pelos Menus, envie a palavra *VOLTAR* \n` +
-        `para retornar ao *Menu Anterior* e envie *SAIR* para finalizar o atendimento`
-
+        '🙄 Você ja esta no *Menu Principal*\n'
       ).then((result) => { }).catch((error) => { console.log(error) });
       console.log("Estagio " + dados[message.from].stage);
       console.dir("Dados:  " + dados[message.from].itens);
@@ -97,6 +89,18 @@ async function execute(message) {
         "Obrigado por utilizar nosso atendimento Virtual."
       ).then((result) => { }).catch((error) => { console.log(error) });
       return
+    }
+    function checaOpcao(str, x) {
+      if ((str >= 1) && (str <= x)) {
+        return true;
+      } else {
+        return false;
+      }
+    }
+    if ((checaOpcao(message.body, 5) === false) && (message.body !== '#') && (message.body.toLowerCase() !== 'voltar') && (message.body.toLowerCase() !== 'sair')) {
+      client.sendText(message.from,
+        "❌ Opção inválida"
+      ).then((result) => { }).catch((error) => { console.log(error) });
     }
   }).catch((error) => console.log(error));
 }

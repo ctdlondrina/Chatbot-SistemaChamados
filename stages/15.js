@@ -104,7 +104,7 @@ async function execute(message) {
     const responses = await sessionClient.detectIntent(request);
     const audioFile = responses[0].outputAudio;
     let filename = `audio-${Math.random()}.wav`;
-    await fs.writeFile(`./AudiosRespostas${filename}`, audioFile, 'binary', (erro) => {
+    await fs.writeFile(`./AudiosRespostas/${filename}`, audioFile, 'binary', (erro) => {
       if (erro) {
         console.log('erro ao gravar arquivo ', erro);
       }
@@ -116,78 +116,91 @@ async function execute(message) {
   // FIM DA CONFIGURACAO E FUNCOES DO DIALOGFLOW
 
   index.clientPromisse.then(async (client) => {
-    let intentName = await (async function () {
-      try {
-        if (message.type === 'chat' && message.isMMS === false && message.body != '#') {
-          let textoResposta = await executeQueries("ctd-yvee", message.from, [message.body], 'pt-BR');
-          client.sendText(message.from, textoResposta[0]).then((result) => { }).catch((erro) => {
-            console.error('Error when sending: ', erro);
-          });
-          //chamada da função que gera a resposta do dialogflow em formato de audio .wav
-          //detectIntentwithTTSResponse("ctd-yvee", message.from, [message.body], 'pt-BR');
-          return textoResposta[1];
-        }
-        if (message.type === 'ptt' && message.isMMS === true) {
-          const buffer = await client.decryptFile(message);
-          let filename = `audio-${Math.random()}.${mime.extension(message.mimetype)}`;
-          await fs.writeFile(filename, buffer, 'base64', (err) => {
-            if (err) {
-              console.log(`error: ${err.message}`);
-              return;
-            }
-          })
-          let textoResposta = await detectAudioIntent("ctd-yvee", message.from, filename, 'AUDIO_ENCODING_OGG_OPUS', '16000', 'pt-BR');
-          client.sendText(message.from, textoResposta[0]).then((result) => { }).catch((erro) => {
-            console.error('Error when sending: ', erro);
-          });
-          await fs.unlink(filename, (error) => {
-            if (error) {
-              console.log('Erro ao deletar o arquivo de audio');
-            }
-          });
-          return textoResposta[1];
-        }
-        if (message.type !== 'chat' && message.type !== 'ptt') {
-          client.sendText(message.from, 'Desculpa 😕 não compreendo o que significa o arquivo que você me enviou.\n' +
-            'você pode perguntar através de texto ou se preferir pode ate me mandar um *AUDIO* que eu vou entender 👍🙂'
-          ).then((result) => { }).catch((error) => { console.log(error) });
-        }
-
-      } catch (error) {
-        console.log('deu erro:  ', error);
-      }
-    })();
-    if (intentName === 'home.office - no') {
-      await client.sendFile(message.from,
-        './Manuais_Procedimentos/RT - Passo a Passo para logar em Home Office - FINAL.pdf',
-        'Home Office.pdf',
-        'Passo a Passo').then((result) => { }).catch((erro) => {
-          console.error('Error when sending: ', erro);
-        });
-      await client.sendText(message.from, 'Resolveu o seu problema ?').then((result) => { }).catch((erro) => {
-        console.log('error when sending: ', erro);
-      })
-    }
-
-    if (message.type === 'chat' && message.isMMS === false && message.body === '#') {
-      dados[message.from].stage = 3;
+    if ((message.type === 'chat') && ((message.body === '#') || (message.body.toLowerCase() === 'voltar'))) {
+      dados[message.from].stage = 1;
+      dados[message.from].itens.pop();
+      console.log("Estagio " + dados[message.from].stage);
+      console.dir("Dados:  " + dados[message.from].itens);
       client.sendText(message.from,
-        `Sobre qual assunto você deseja atendimento ? \n` +
+        'Seja bem vindo ao sistema de 🛠️ Suporte de Informática da CTD 🖥️ \n' +
         `Por favor *escolha uma opção:*\n\n` +
         `*MENU PRINCIPAL*\n` +
         `⚒️ *1* - Abertura de Chamado. \n` +
         `🔍 *2* - Consultar Chamado. \n` +
-        `📞 *3* - Consultar Ramais. \n` +
-        `🔑 *4* - Alteração de Senhas. \n` +
-        `☎️ *5* - Telefonia. \n` +
-        `👩🏻‍💼 *6* - Falar com a Lunna. \n` +
-        `🔥 *7* - Dificuldade de Acesso a Sistemas. \n` +
-        `✍🏼 *8* - Criticas ou Elogios. \n\n\n` +
+        `☎️ *3* - Consultar Ramais. \n` +
+        `👩🏻‍💼 *4* - Falar com a *Lunna*. \n` +
+        `✍🏼 *5* - Críticas Sugestões ou Elogios. \n\n\n` +
 
         `A qualquer momento durante a navegação pelos Menus, envie a palavra *VOLTAR* \n` +
         `para retornar ao *Menu Anterior* e envie *SAIR* para finalizar o atendimento`
       ).catch((error) => { console.log(error) });
       return
+    }
+    if (message.type === 'chat' && message.body.toLowerCase() === "sair") {
+      dados[message.from].stage = 0;
+      while (dados[message.from].itens.length > 0) {
+        dados[message.from].itens.pop();
+      }
+      console.log("Estagio " + dados[message.from].stage);
+      console.dir("Dados:  " + dados[message.from].itens);
+      client.sendText(message.from,
+        "🚫 A Solicitação foi Cancelada \n" +
+        "Obrigado por utilizar nosso atendimento Virtual."
+      ).then((result) => { }).catch((error) => { console.log(error) });
+      return
+    }
+    else {
+      let intentName = await (async function () {
+        try {
+          if (message.type === 'chat' && message.body != '#') {
+            let textoResposta = await executeQueries("ctd-yvee", message.from, [message.body], 'pt-BR');
+            client.sendText(message.from, textoResposta[0]).then((result) => { }).catch((erro) => {
+              console.error('Error when sending: ', erro);
+            });
+            //chamada da função que gera a resposta do dialogflow em formato de audio .wav
+            //detectIntentwithTTSResponse("ctd-yvee", message.from, [message.body], 'pt-BR');
+            return textoResposta[1];
+          }
+          if (message.type === 'ptt') {
+            const buffer = await client.decryptFile(message);
+            let filename = `audio-${Math.random()}.${mime.extension(message.mimetype)}`;
+            await fs.writeFile(filename, buffer, 'base64', (err) => {
+              if (err) {
+                console.log(`error: ${err.message}`);
+                return;
+              }
+            })
+            let textoResposta = await detectAudioIntent("ctd-yvee", message.from, filename, 'AUDIO_ENCODING_OGG_OPUS', '16000', 'pt-BR');
+            client.sendText(message.from, textoResposta[0]).then((result) => { }).catch((erro) => {
+              console.error('Error when sending: ', erro);
+            });
+            await fs.unlink(filename, (error) => {
+              if (error) {
+                console.log('Erro ao deletar o arquivo de audio');
+              }
+            });
+            return textoResposta[1];
+          }
+          if (message.type !== 'chat' && message.type !== 'ptt') {
+            client.sendText(message.from, 'Desculpa 😕 não compreendo o que significa o arquivo que você me enviou.\n' +
+              'você pode perguntar através de texto ou se preferir pode ate me mandar um *AUDIO* que eu vou entender 👍🙂'
+            ).then((result) => { }).catch((error) => { console.log(error) });
+          }
+        } catch (error) {
+          console.log('deu erro:  ', error);
+        }
+      })();
+      if (intentName === 'home.office - no') {
+        await client.sendFile(message.from,
+          './Manuais_Procedimentos/RT - Passo a Passo para logar em Home Office - FINAL.pdf',
+          'Home Office.pdf',
+          'Passo a Passo').then((result) => { }).catch((erro) => {
+            console.error('Error when sending: ', erro);
+          });
+        await client.sendText(message.from, 'Resolveu o seu problema ?').then((result) => { }).catch((erro) => {
+          console.log('error when sending: ', erro);
+        })
+      }
     }
   }).catch((error) => console.log(error));
 }

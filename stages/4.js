@@ -27,7 +27,7 @@ async function execute(message) {
       return
     }
     if (message.body === '2') {
-      dados[message.from].stage = 6;
+      dados[message.from].stage = 5;
       dados[message.from].itens.push(message.body);
       console.log("Estagio " + dados[message.from].stage);
       console.dir("Dados:  " + dados[message.from].itens);
@@ -43,7 +43,7 @@ async function execute(message) {
       return
     }
     if (message.body === '3') {
-      dados[message.from].stage = 6;
+      dados[message.from].stage = 5;
       dados[message.from].itens.push(message.body);
       console.log("Estagio " + dados[message.from].stage);
       console.dir("Dados:  " + dados[message.from].itens);
@@ -68,7 +68,10 @@ async function execute(message) {
       return
     }
     if (message.body === "5") {
-      dados[message.from].stage = 6;
+      dados[message.from].stage = 5;
+      dados[message.from].itens.push(message.body);
+      console.log("Estagio " + dados[message.from].stage);
+      console.dir("Dados:  " + dados[message.from].itens);
       client.sendText(message.from,
         "*📧 e-MAIL* \n\n" +
         "*1* - Criação de e-mail\n" +
@@ -123,7 +126,7 @@ async function execute(message) {
       console.log("Estagio " + dados[message.from].stage);
       console.dir("Dados:  " + dados[message.from].itens);
       client.sendText(message.from,
-        "🔒 DIFICULDADE DE ACESSO A SISTEMAS.\n\n" +
+        "🔒 *DIFICULDADE DE ACESSO A SISTEMAS*.\n\n" +
         "Descreva a solicitação\n\n" +
         "Voltar ao *Menu Principal* digite #️⃣"
       ).then((result) => { }).catch((error) => { console.log(error) });
@@ -173,6 +176,18 @@ async function execute(message) {
         "Obrigado por utilizar nosso atendimento Virtual."
       ).then((result) => { }).catch((error) => { console.log(error) });
       return
+    }
+    function checaOpcao(str, x) {
+      if ((str >= 1) && (str <= x)) {
+        return true;
+      } else {
+        return false;
+      }
+    }
+    if ((checaOpcao(message.body, 10) === false) && (message.body !== '#') && (message.body.toLowerCase() !== 'voltar') && (message.body.toLowerCase() !== 'sair')) {
+      client.sendText(message.from,
+        "❌ Opção inválida"
+      ).then((result) => { }).catch((error) => { console.log(error) });
     }
   }).catch((error) => console.log(error));
 }
